@@ -1,0 +1,21 @@
+# Android build products
+bin/
+gen/
+libs/
+obj/
+res/
+
+# products of "android create project" or "android update project"
+build.xml
+local.properties
+proguard-project.txt
+proguard.cfg
+
+# emacs detritus
+*~
+
+# Eclipse detritus
+.settings
+
+# Mac OS X detritus
+.DS_Store
