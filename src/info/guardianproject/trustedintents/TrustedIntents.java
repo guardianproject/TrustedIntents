@@ -1,45 +1,91 @@
 
 package info.guardianproject.trustedintents;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.text.TextUtils;
 
 import java.security.cert.CertificateException;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 public class TrustedIntents {
 
     private static TrustedIntents instance;
 
-    private LinkedHashMap<String, Signature[]> map = new LinkedHashMap<String, Signature[]>();
+    private final Context context;
+    private PackageManager pm;
 
-    private TrustedIntents() {
+    private final LinkedHashSet<ApkSignaturePin> pinList;
+
+    private TrustedIntents(Context context) {
+        this.context = context;
+        pinList = new LinkedHashSet<ApkSignaturePin>();
     }
 
-    public static TrustedIntents get() {
+    public static TrustedIntents get(Context context) {
         if (instance == null)
-            instance = new TrustedIntents();
+            instance = new TrustedIntents(context.getApplicationContext());
         return instance;
     }
 
-    public void addPin(String packageName, Signature[] pin) {
-        map.put(packageName, pin);
+    public boolean isReceiverTrusted(Intent intent) {
+        if (intent == null)
+            return false;
+        String packageName = intent.getPackage();
+        if (TextUtils.isEmpty(packageName))
+            return false;
+        try {
+            checkTrustedSigner(packageName);
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (CertificateException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
-    public void checkPin(String packageName, Signature[] signatures)
+    /**
+     * Add an APK signature that is always trusted for any packageName.
+     *
+     * @param pin the APK signature to trust
+     */
+    public void addTrustedSigner(ApkSignaturePin pin) {
+        pinList.add(pin);
+    }
+
+    public void checkTrustedSigner(String packageName)
             throws NameNotFoundException, CertificateException {
-        if (TextUtils.isEmpty(packageName))
-            throw new NameNotFoundException("packageName cannot be null or empty!");
+        if (pm == null)
+            pm = context.getPackageManager();
+        PackageInfo packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
+        checkTrustedSigner(packageInfo.signatures);
+    }
+
+    public void checkTrustedSigner(PackageInfo packageInfo)
+            throws NameNotFoundException, CertificateException {
+        checkTrustedSigner(packageInfo.signatures);
+    }
+
+    public void checkTrustedSigner(Signature[] signatures)
+            throws NameNotFoundException, CertificateException {
         if (signatures == null || signatures.length == 0)
             throw new CertificateException("signatures cannot be null or empty!");
         for (int i = 0; i < signatures.length; i++)
             if (signatures[i] == null || signatures[i].toByteArray().length == 0)
                 throw new CertificateException("Certificates cannot be null or empty!");
-        if (!map.containsKey(packageName))
-            throw new NameNotFoundException(packageName);
-        if (!areSignaturesEqual(signatures, map.get(packageName)))
-            throw new CertificateException("Signature not equal to pin for " + packageName);
+
+        // check whether the APK signer is trusted for all apps
+        for (ApkSignaturePin pin : pinList)
+            if (areSignaturesEqual(signatures, pin.getSignatures()))
+                return; // found a matching trusted APK signer
+
+        throw new CertificateException("APK signatures did not match!");
     }
 
     public boolean areSignaturesEqual(Signature[] sigs0, Signature[] sigs1) {
