@@ -7,7 +7,7 @@
     <uses-sdk android:minSdkVersion="7" />
 
     <instrumentation
-        android:name="android.test.InstrumentationTestRunner"
+        android:name="com.zutubi.android.junitreport.JUnitReportTestRunner"
         android:targetPackage="info.guardianproject.trustedintents.test" />
 
     <application

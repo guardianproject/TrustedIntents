@@ -1,9 +1,10 @@
 # Android build products
 bin/
 gen/
-libs/
+/libs/
 obj/
 res/
+junit-report.xml
 
 # products of "android create project" or "android update project"
 build.xml
