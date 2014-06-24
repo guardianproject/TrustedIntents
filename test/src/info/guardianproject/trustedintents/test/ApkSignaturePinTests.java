@@ -17,9 +17,12 @@ public class ApkSignaturePinTests extends AndroidTestCase {
 
     public void testFingerprints() {
         ApkSignaturePin android = new AndroidSystemPin();
+        assertTrue(android.doFingerprintsMatchCertificates());
         Log.i(TAG, androidSystemFingerprint + " == " + android.getSHA1Fingerprint());
         assertEquals(androidSystemFingerprint, android.getSHA1Fingerprint());
+
         ApkSignaturePin comAndroid = new AndroidIncludedAppsPin();
+        assertTrue(comAndroid.doFingerprintsMatchCertificates());
         Log.i(TAG, androidIncludedAppsFingerprint + " == " + comAndroid.getSHA1Fingerprint());
         assertEquals(androidIncludedAppsFingerprint, comAndroid.getSHA1Fingerprint());
     }

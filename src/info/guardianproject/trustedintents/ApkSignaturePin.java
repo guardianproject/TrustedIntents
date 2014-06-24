@@ -6,9 +6,11 @@ import android.content.pm.Signature;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public abstract class ApkSignaturePin {
 
+    protected String[] fingerprints; // hex-encoded SHA-256 hashes of the certs
     protected byte[][] certificates; // array of DER-encoded X.509 certificates
     private Signature[] signatures;
 
@@ -65,5 +67,21 @@ public abstract class ApkSignaturePin {
      */
     public String getSHA256Fingerprint(byte[] input) {
         return getFingerprint("SHA-256");
+    }
+
+    /**
+     * Compares the calculated SHA-256 cert fingerprint to the stored one.
+     *
+     * @return the result of the comparison
+     */
+    public boolean doFingerprintsMatchCertificates() {
+        if (fingerprints == null || certificates == null)
+            return false;
+        String[] calcedFingerprints = new String[certificates.length];
+        for (int i = 0; i < calcedFingerprints.length; i++)
+            calcedFingerprints[i] = getSHA256Fingerprint(certificates[i]);
+        if (fingerprints.length == 0 || calcedFingerprints.length == 0)
+            return false;
+        return Arrays.equals(fingerprints, calcedFingerprints);
     }
 }

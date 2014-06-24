@@ -6,6 +6,9 @@ import info.guardianproject.trustedintents.ApkSignaturePin;
 public final class AndroidSystemPin extends ApkSignaturePin {
 
     public AndroidSystemPin() {
+        fingerprints = new String[] {
+                "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+        };
         certificates = new byte[][] {
                 {
                         48, -126, 4, -88, 48, -126, 3, -112, -96, 3, 2, 1, 2, 2, 9, 0, -77, -103,
@@ -79,7 +82,7 @@ public final class AndroidSystemPin extends ApkSignaturePin {
                         -115, -43, -72, 57, -110, 3, -38, -82, 46, -44, 70, 35, 46, 79, -23, -67,
                         -106, 19, -108, -58, 48, 14, 81, 56, -29, -49, -46, -123, -26, -28, -28,
                         -125, 83, -116, -72, -79, -77, 87
-            },
+                },
         };
     }
 }
