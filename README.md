@@ -6,5 +6,6 @@ rather than requiring to match the current app's signature.
 
 For more info:
 
-* https://developer.android.com/guide/topics/manifest/permission-element.html#plevel
 * https://dev.guardianproject.info/projects/bazaar/wiki/Trusted_Intent_Interaction
+* https://guardianproject.info/2014/01/21/improving-trust-and-flexibility-in-interactions-between-android-apps/
+* https://developer.android.com/guide/topics/manifest/permission-element.html#plevel
