@@ -1,6 +1,8 @@
 
 package info.guardianproject.trustedintents;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -33,20 +35,27 @@ public class TrustedIntents {
     }
 
     public boolean isReceiverTrusted(Intent intent) {
-        if (intent == null)
+        if (!isIntentSane(intent))
             return false;
         String packageName = intent.getPackage();
-        if (TextUtils.isEmpty(packageName))
-            return false;
         try {
             checkTrustedSigner(packageName);
         } catch (NameNotFoundException e) {
             e.printStackTrace();
             return false;
         } catch (CertificateException e) {
-            e.printStackTrace();
             return false;
         }
+        return true;
+    }
+
+    private boolean isIntentSane(Intent intent) {
+        if (intent == null)
+            return false;
+        String packageName = intent.getPackage();
+        if (TextUtils.isEmpty(packageName))
+            return false;
+
         return true;
     }
 
@@ -100,5 +109,18 @@ public class TrustedIntents {
             if (!sigs0[i].equals(sigs1[i]))
                 return false;
         return true;
+    }
+
+    public void startActivity(Activity activity, Intent intent) throws CertificateException {
+        if (!isIntentSane(intent))
+            throw new ActivityNotFoundException("The intent was null or empty!");
+        String packageName = intent.getPackage();
+        try {
+            checkTrustedSigner(packageName);
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+            throw new ActivityNotFoundException(e.getLocalizedMessage());
+        }
+        activity.startActivity(intent);
     }
 }
