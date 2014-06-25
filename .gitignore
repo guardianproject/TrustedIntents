@@ -1,10 +1,14 @@
 # Android build products
 bin/
 gen/
-/libs/
 obj/
-res/
+
+# test products
 junit-report.xml
+
+# only hide in library project, not test/ project
+/libs/
+/res/
 
 # products of "android create project" or "android update project"
 build.xml
