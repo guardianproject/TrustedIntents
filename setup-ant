@@ -3,5 +3,7 @@
 set -e
 set -x
 
-android update lib-project --path `pwd`
-android update test-project --path `pwd`/test --main `pwd`
+CURDIR=`pwd`
+
+android update lib-project --path ${CURDIR}
+android update test-project --path ${CURDIR}/test --main ${CURDIR}
