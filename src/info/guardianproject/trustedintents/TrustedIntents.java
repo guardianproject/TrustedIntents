@@ -10,6 +10,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.text.TextUtils;
 
+import java.lang.reflect.Constructor;
 import java.security.cert.CertificateException;
 import java.util.LinkedHashSet;
 
@@ -61,10 +62,18 @@ public class TrustedIntents {
     /**
      * Add an APK signature that is always trusted for any packageName.
      *
-     * @param pin the APK signature to trust
+     * @param pin Class of the APK signature to trust
+     * @throws IllegalArgumentException if the class cannot be instantiated
      */
-    public void addTrustedSigner(ApkSignaturePin pin) {
-        pinList.add(pin);
+    public void addTrustedSigner(Class<? extends ApkSignaturePin> cls) {
+        try {
+            Constructor<? extends ApkSignaturePin> constructor = cls.getConstructor();
+            pinList.add((ApkSignaturePin) constructor.newInstance((Object[]) null));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException(e);
+        }
+    }
     }
 
     public void checkTrustedSigner(String packageName)
