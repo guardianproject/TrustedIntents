@@ -115,6 +115,10 @@ public class TrustedIntents {
         if (!isIntentSane(intent))
             throw new ActivityNotFoundException("The intent was null or empty!");
         String packageName = intent.getPackage();
+        if (TextUtils.isEmpty(packageName)) {
+            packageName = intent.getComponent().getPackageName();
+            intent.setPackage(packageName);
+        }
         try {
             checkTrustedSigner(packageName);
         } catch (NameNotFoundException e) {
