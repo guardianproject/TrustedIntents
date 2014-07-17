@@ -1,7 +1,6 @@
 
 package info.guardianproject.trustedintents;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -111,7 +110,7 @@ public class TrustedIntents {
         return true;
     }
 
-    public void startActivity(Activity activity, Intent intent) throws CertificateException {
+    public void startActivity(Context context, Intent intent) throws CertificateException {
         if (!isIntentSane(intent))
             throw new ActivityNotFoundException("The intent was null or empty!");
         String packageName = intent.getPackage();
@@ -125,6 +124,6 @@ public class TrustedIntents {
             e.printStackTrace();
             throw new ActivityNotFoundException(e.getLocalizedMessage());
         }
-        activity.startActivity(intent);
+        context.startActivity(intent);
     }
 }
