@@ -65,7 +65,7 @@ public abstract class ApkSignaturePin {
      *
      * @return the SHA-256 sum as hex String
      */
-    public String getSHA256Fingerprint(byte[] input) {
+    public String getSHA256Fingerprint() {
         return getFingerprint("SHA-256");
     }
 
@@ -79,7 +79,7 @@ public abstract class ApkSignaturePin {
             return false;
         String[] calcedFingerprints = new String[certificates.length];
         for (int i = 0; i < calcedFingerprints.length; i++)
-            calcedFingerprints[i] = getSHA256Fingerprint(certificates[i]);
+            calcedFingerprints[i] = getSHA256Fingerprint();
         if (fingerprints.length == 0 || calcedFingerprints.length == 0)
             return false;
         return Arrays.equals(fingerprints, calcedFingerprints);
