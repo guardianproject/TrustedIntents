@@ -17,6 +17,7 @@ import android.util.Log;
 import com.android.AndroidIncludedAppsPin;
 import com.android.AndroidSystemPin;
 
+import info.guardianproject.trustedintents.ApkSignaturePin;
 import info.guardianproject.trustedintents.TrustedIntents;
 
 public class TrustedIntentsTests extends AndroidTestCase {
@@ -126,6 +127,17 @@ public class TrustedIntentsTests extends AndroidTestCase {
             }
             assertFalse(TrustedIntents.get(context).areSignaturesEqual(first, second));
         }
+    }
+
+    public void testSetPinWithAbstractClass() {
+        TrustedIntents ti = TrustedIntents.get(context);
+        try {
+            ti.addTrustedSigner(ApkSignaturePin.class);
+        } catch (IllegalArgumentException e) {
+            Log.i(TAG, "testSetPinWithAbstractClass");
+            assertEquals(e.getClass(), IllegalArgumentException.class);
+        }
+        assert false;
     }
 
     public void testCheckPin() {
