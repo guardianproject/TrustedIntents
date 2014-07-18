@@ -2,6 +2,7 @@
 package info.guardianproject.trustedintents;
 
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -38,6 +39,9 @@ public class TrustedIntents {
         if (!isIntentSane(intent))
             return false;
         String packageName = intent.getPackage();
+        if (TextUtils.isEmpty(packageName)) {
+            packageName = intent.getComponent().getPackageName();
+        }
         try {
             checkTrustedSigner(packageName);
         } catch (NameNotFoundException e) {
@@ -52,10 +56,12 @@ public class TrustedIntents {
     private boolean isIntentSane(Intent intent) {
         if (intent == null)
             return false;
-        String packageName = intent.getPackage();
-        if (TextUtils.isEmpty(packageName))
-            return false;
-
+        if (TextUtils.isEmpty(intent.getPackage())) {
+            ComponentName componentName = intent.getComponent();
+            if (componentName == null || TextUtils.isEmpty(componentName.getPackageName())) {
+                return false;
+            }
+        }
         return true;
     }
 
