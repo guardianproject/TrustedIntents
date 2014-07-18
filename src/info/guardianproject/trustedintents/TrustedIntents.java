@@ -81,6 +81,41 @@ public class TrustedIntents {
             throw new IllegalArgumentException(e);
         }
     }
+
+    /**
+     * Remove an APK signature from the trusted set.
+     *
+     * @param pin {@link Class} of the {@link ApkSignaturePin} to remove
+     */
+    public boolean removeTrustedSigner(Class<? extends ApkSignaturePin> cls) {
+        for (ApkSignaturePin pin : pinList) {
+            if (pin.getClass().equals(cls)) {
+                return pinList.remove(pin);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Remove all {@link ApkSignaturePin}s from the trusted set.
+     */
+    public boolean removeAllTrustedSigners() {
+        pinList.clear();
+        return pinList.isEmpty();
+    }
+
+    /**
+     * Check if a {@link ApkSignaturePin} is trusted.
+     *
+     * @param pin {@link Class} of the {@link ApkSignaturePin} to check
+     */
+    public boolean isTrustedSigner(Class<? extends ApkSignaturePin> cls) {
+        for (ApkSignaturePin pin : pinList) {
+            if (pin.getClass().equals(cls)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void checkTrustedSigner(String packageName)

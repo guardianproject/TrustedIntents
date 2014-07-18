@@ -44,6 +44,7 @@ public class TrustedIntentsTests extends AndroidTestCase {
     public void setUp() {
         context = getContext();
         pm = context.getPackageManager();
+        TrustedIntents.get(context).removeAllTrustedSigners();
     }
 
     private void checkAreSignaturesEqual(String[] packages) {
@@ -134,10 +135,23 @@ public class TrustedIntentsTests extends AndroidTestCase {
         try {
             ti.addTrustedSigner(ApkSignaturePin.class);
         } catch (IllegalArgumentException e) {
-            Log.i(TAG, "testSetPinWithAbstractClass");
             assertEquals(e.getClass(), IllegalArgumentException.class);
         }
         assert false;
+    }
+
+    public void testIsTrustedSigner() {
+        TrustedIntents ti = TrustedIntents.get(context);
+        assertFalse(ti.isTrustedSigner(AndroidSystemPin.class));
+        assertFalse(ti.isTrustedSigner(AndroidIncludedAppsPin.class));
+        /* add one pin as trusted */
+        assertTrue(ti.addTrustedSigner(AndroidSystemPin.class));
+        assertTrue(ti.isTrustedSigner(AndroidSystemPin.class));
+        assertFalse(ti.isTrustedSigner(AndroidIncludedAppsPin.class));
+        /* add the other pin as trusted */
+        assertTrue(ti.addTrustedSigner(AndroidIncludedAppsPin.class));
+        assertTrue(ti.isTrustedSigner(AndroidSystemPin.class));
+        assertTrue(ti.isTrustedSigner(AndroidIncludedAppsPin.class));
     }
 
     public void testCheckPin() {
@@ -185,6 +199,56 @@ public class TrustedIntentsTests extends AndroidTestCase {
             intent = new Intent();
             intent.setPackage(packageName);
             assertTrue(ti.isReceiverTrusted(intent));
+        }
+    }
+
+    public void testRemovePin() {
+        Intent intent;
+        TrustedIntents ti = TrustedIntents.get(context);
+
+        assertFalse(ti.isReceiverTrusted(new Intent()));
+        intent = new Intent();
+        intent.setPackage("");
+        assertFalse(ti.isReceiverTrusted(intent));
+
+        /* trust everything first */
+        assertTrue(ti.addTrustedSigner(AndroidSystemPin.class));
+        assertTrue(ti.addTrustedSigner(AndroidIncludedAppsPin.class));
+        for (String packageName : packagesSignedByAndroidSystem) {
+            intent = new Intent();
+            intent.setPackage(packageName);
+            assertTrue(ti.isReceiverTrusted(intent));
+        }
+        for (String packageName : packagesSignedByAndroidIncludedApps) {
+            intent = new Intent();
+            intent.setPackage(packageName);
+            assertTrue(ti.isReceiverTrusted(intent));
+        }
+
+        /* remove one key, now not everything should be trusted */
+        assertTrue(ti.removeTrustedSigner(AndroidIncludedAppsPin.class));
+        for (String packageName : packagesSignedByAndroidSystem) {
+            intent = new Intent();
+            intent.setPackage(packageName);
+            assertTrue(ti.isReceiverTrusted(intent));
+        }
+        for (String packageName : packagesSignedByAndroidIncludedApps) {
+            intent = new Intent();
+            intent.setPackage(packageName);
+            assertFalse(ti.isReceiverTrusted(intent));
+        }
+
+        /* remove the second pin, nothing should be trusted */
+        assertTrue(ti.removeTrustedSigner(AndroidSystemPin.class));
+        for (String packageName : packagesSignedByAndroidSystem) {
+            intent = new Intent();
+            intent.setPackage(packageName);
+            assertFalse(ti.isReceiverTrusted(intent));
+        }
+        for (String packageName : packagesSignedByAndroidIncludedApps) {
+            intent = new Intent();
+            intent.setPackage(packageName);
+            assertFalse(ti.isReceiverTrusted(intent));
         }
     }
 }
