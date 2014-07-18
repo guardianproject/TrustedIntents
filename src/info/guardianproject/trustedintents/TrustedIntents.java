@@ -68,13 +68,14 @@ public class TrustedIntents {
     /**
      * Add an APK signature that is always trusted for any packageName.
      *
-     * @param pin Class of the APK signature to trust
-     * @throws IllegalArgumentException if the class cannot be instantiated
+     * @param pin {@link Class} of the {@link ApkSignaturePin} to trust
+     * @return boolean
+     * @throws {@link IllegalArgumentException} the class cannot be instantiated
      */
-    public void addTrustedSigner(Class<? extends ApkSignaturePin> cls) {
+    public boolean addTrustedSigner(Class<? extends ApkSignaturePin> cls) {
         try {
             Constructor<? extends ApkSignaturePin> constructor = cls.getConstructor();
-            pinList.add((ApkSignaturePin) constructor.newInstance((Object[]) null));
+            return pinList.add((ApkSignaturePin) constructor.newInstance((Object[]) null));
         } catch (Exception e) {
             e.printStackTrace();
             throw new IllegalArgumentException(e);

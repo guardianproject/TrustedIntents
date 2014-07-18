@@ -146,7 +146,7 @@ public class TrustedIntentsTests extends AndroidTestCase {
         }
 
         /* packages signed by AndroidSystem should be trusted, others not */
-        ti.addTrustedSigner(AndroidSystemPin.class);
+        assertTrue(ti.addTrustedSigner(AndroidSystemPin.class));
         for (String packageName : packagesSignedByAndroidSystem) {
             assertTrue(ti.isReceiverTrusted(getLauncherIntent(packageName)));
             intent = new Intent();
@@ -161,7 +161,7 @@ public class TrustedIntentsTests extends AndroidTestCase {
         }
 
         /* all should be trusted now */
-        ti.addTrustedSigner(AndroidIncludedAppsPin.class);
+        assertTrue(ti.addTrustedSigner(AndroidIncludedAppsPin.class));
         for (String packageName : packagesSignedByAndroidSystem) {
             assertTrue(ti.isReceiverTrusted(getLauncherIntent(packageName)));
             intent = new Intent();
