@@ -25,6 +25,7 @@ public class TrustedIntentsTests extends AndroidTestCase {
 
     Context context;
     PackageManager pm;
+    TrustedIntents ti;
     final String[] packagesSignedByAndroidIncludedApps = new String[] {
             "com.android.browser", "com.android.calculator2", "com.android.calendar",
             "com.android.dreams.basic", "com.android.providers.calendar",
@@ -44,7 +45,8 @@ public class TrustedIntentsTests extends AndroidTestCase {
     public void setUp() {
         context = getContext();
         pm = context.getPackageManager();
-        TrustedIntents.get(context).removeAllTrustedSigners();
+        ti = TrustedIntents.get(context);
+        ti.removeAllTrustedSigners();
     }
 
     private void checkAreSignaturesEqual(String[] packages) {
@@ -131,7 +133,6 @@ public class TrustedIntentsTests extends AndroidTestCase {
     }
 
     public void testSetPinWithAbstractClass() {
-        TrustedIntents ti = TrustedIntents.get(context);
         try {
             ti.addTrustedSigner(ApkSignaturePin.class);
         } catch (IllegalArgumentException e) {
@@ -141,7 +142,6 @@ public class TrustedIntentsTests extends AndroidTestCase {
     }
 
     public void testIsTrustedSigner() {
-        TrustedIntents ti = TrustedIntents.get(context);
         assertFalse(ti.isTrustedSigner(AndroidSystemPin.class));
         assertFalse(ti.isTrustedSigner(AndroidIncludedAppsPin.class));
         /* add one pin as trusted */
@@ -156,7 +156,6 @@ public class TrustedIntentsTests extends AndroidTestCase {
 
     public void testCheckPin() {
         Intent intent;
-        TrustedIntents ti = TrustedIntents.get(context);
 
         assertFalse(ti.isReceiverTrusted(new Intent()));
         intent = new Intent();
@@ -204,7 +203,6 @@ public class TrustedIntentsTests extends AndroidTestCase {
 
     public void testRemovePin() {
         Intent intent;
-        TrustedIntents ti = TrustedIntents.get(context);
 
         assertFalse(ti.isReceiverTrusted(new Intent()));
         intent = new Intent();
