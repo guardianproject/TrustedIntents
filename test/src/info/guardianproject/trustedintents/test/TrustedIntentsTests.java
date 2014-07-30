@@ -20,26 +20,16 @@ import com.android.AndroidSystemPin;
 import info.guardianproject.trustedintents.ApkSignaturePin;
 import info.guardianproject.trustedintents.TrustedIntents;
 
+import java.util.ArrayList;
+
 public class TrustedIntentsTests extends AndroidTestCase {
     private static final String TAG = "TrustedIntentsTests";
 
     Context context;
     PackageManager pm;
     TrustedIntents ti;
-    final String[] packagesSignedByAndroidIncludedApps = new String[] {
-            "com.android.browser", "com.android.calculator2", "com.android.calendar",
-            "com.android.dreams.basic", "com.android.providers.calendar",
-            "com.android.camera", "com.android.deskclock", "com.android.gesture.builder",
-            "com.android.smoketest", "com.android.smoketest.tests",
-            "com.android.emulator.connectivity.test", "com.android.development_settings",
-            "com.android.email", "com.example.android.livecubes", "com.android.exchange"
-    };
-    final String[] packagesSignedByAndroidSystem = new String[] {
-            "android", "com.android.certinstaller", "com.android.backupconfirm",
-            "com.android.keyguard", "com.android.sdksetup", "com.android.sharedstoragebackup",
-            "com.android.customlocale2", "com.android.development", "com.android.documentsui",
-            "com.android.externalstorage", "com.android.location.fused", "com.android.inputdevices"
-    };
+    String[] packagesSignedByAndroidIncludedApps;
+    String[] packagesSignedByAndroidSystem;
 
     @Override
     public void setUp() {
@@ -47,6 +37,45 @@ public class TrustedIntentsTests extends AndroidTestCase {
         pm = context.getPackageManager();
         ti = TrustedIntents.get(context);
         ti.removeAllTrustedSigners();
+
+        String[] androidIncludedApps = {
+                "com.android.browser", "com.android.calculator2", "com.android.calendar",
+                "com.android.dreams.basic", "com.android.providers.calendar",
+                "com.android.camera", "com.android.deskclock", "com.android.gesture.builder",
+                "com.android.smoketest", "com.android.smoketest.tests",
+                "com.android.emulator.connectivity.test", "com.android.development_settings",
+                "com.android.email", "com.example.android.livecubes", "com.android.exchange"
+        };
+        ArrayList<String> androidIncludedAppsInstalled = new ArrayList<String>(
+                androidIncludedApps.length);
+        for (String packageName : androidIncludedApps) {
+            try {
+                pm.getPackageInfo(packageName, 0);
+                androidIncludedAppsInstalled.add(packageName);
+            } catch (NameNotFoundException e) {
+                Log.w(TAG, packageName + " not installed on this device");
+            }
+        }
+        packagesSignedByAndroidIncludedApps = androidIncludedAppsInstalled.toArray(new String[0]);
+
+        String[] androidSystem = {
+                "android", "com.android.certinstaller", "com.android.backupconfirm",
+                "com.android.keyguard", "com.android.sdksetup", "com.android.sharedstoragebackup",
+                "com.android.customlocale2", "com.android.development", "com.android.documentsui",
+                "com.android.externalstorage", "com.android.location.fused",
+                "com.android.inputdevices"
+        };
+        ArrayList<String> androidSystemInstalled = new ArrayList<String>(
+                androidSystem.length);
+        for (String packageName : androidSystem) {
+            try {
+                pm.getPackageInfo(packageName, 0);
+                androidSystemInstalled.add(packageName);
+            } catch (NameNotFoundException e) {
+                Log.w(TAG, packageName + " not installed on this device");
+            }
+        }
+        packagesSignedByAndroidSystem = androidSystemInstalled.toArray(new String[0]);
     }
 
     private void checkAreSignaturesEqual(String[] packages) {
@@ -57,7 +86,7 @@ public class TrustedIntentsTests extends AndroidTestCase {
                 PackageInfo pkgInfo = pm.getPackageInfo(packages[i], PackageManager.GET_SIGNATURES);
                 first = pkgInfo.signatures;
             } catch (NameNotFoundException e) {
-                Log.w(TAG, "NameNotFoundException: " + e.getMessage());
+                Log.w(TAG, "NameNotFoundException on " + packages[i] + ": " + e.getMessage());
                 continue;
             }
             for (int j = 0; j < packages.length; j++) {
@@ -90,11 +119,10 @@ public class TrustedIntentsTests extends AndroidTestCase {
         i.setPackage(packageName);
         i.addCategory(Intent.CATEGORY_LAUNCHER);
         ResolveInfo resolveInfo = pm.resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY);
-        if (resolveInfo == null)
+        if (TextUtils.isEmpty(packageName) || resolveInfo == null)
             return i;
         ActivityInfo activityInfo = resolveInfo.activityInfo;
-        if (!TextUtils.isEmpty(packageName))
-            assertEquals(activityInfo.packageName, packageName);
+        assertEquals(activityInfo.packageName, packageName);
         return new Intent(Intent.ACTION_MAIN)
                 .setComponent(new ComponentName(packageName, activityInfo.name));
     }
