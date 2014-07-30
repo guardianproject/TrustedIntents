@@ -5,9 +5,11 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.text.TextUtils;
 
@@ -34,6 +36,14 @@ public class TrustedIntents {
         return instance;
     }
 
+    public boolean isReceiverTrusted(ResolveInfo resolveInfo) {
+        return isPackageNameTrusted(resolveInfo.activityInfo.packageName);
+    }
+
+    public boolean isReceiverTrusted(ActivityInfo activityInfo) {
+        return isPackageNameTrusted(activityInfo.packageName);
+    }
+
     public boolean isReceiverTrusted(Intent intent) {
         if (!isIntentSane(intent))
             return false;
@@ -41,6 +51,10 @@ public class TrustedIntents {
         if (TextUtils.isEmpty(packageName)) {
             packageName = intent.getComponent().getPackageName();
         }
+        return isPackageNameTrusted(packageName);
+    }
+
+    public boolean isPackageNameTrusted(String packageName) {
         try {
             checkTrustedSigner(packageName);
         } catch (NameNotFoundException e) {
