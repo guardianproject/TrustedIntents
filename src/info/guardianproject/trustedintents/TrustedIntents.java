@@ -19,19 +19,18 @@ public class TrustedIntents {
 
     private static TrustedIntents instance;
 
-    private final Context context;
-    private PackageManager pm;
+    private static PackageManager pm;
 
     private final LinkedHashSet<ApkSignaturePin> pinList;
 
     private TrustedIntents(Context context) {
-        this.context = context;
-        pinList = new LinkedHashSet<ApkSignaturePin>();
+        pm = context.getPackageManager();
+        this.pinList = new LinkedHashSet<ApkSignaturePin>();
     }
 
     public static TrustedIntents get(Context context) {
         if (instance == null)
-            instance = new TrustedIntents(context.getApplicationContext());
+            instance = new TrustedIntents(context);
         return instance;
     }
 
@@ -120,8 +119,6 @@ public class TrustedIntents {
 
     public void checkTrustedSigner(String packageName)
             throws NameNotFoundException, CertificateException {
-        if (pm == null)
-            pm = context.getPackageManager();
         PackageInfo packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
         checkTrustedSigner(packageInfo.signatures);
     }
