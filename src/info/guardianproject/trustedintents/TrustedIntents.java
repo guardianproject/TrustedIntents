@@ -1,6 +1,7 @@
 
 package info.guardianproject.trustedintents;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
@@ -64,6 +65,22 @@ public class TrustedIntents {
             return false;
         }
         return true;
+    }
+
+    public Intent getIntentFromTrustedSender(Activity activity)
+            throws NameNotFoundException, CertificateException {
+        Intent intent = activity.getIntent();
+        if (!isIntentSane(intent))
+            throw new NameNotFoundException(
+                    "Intent incomplete or was sent using startActivity() instead of startActivityWithResult()");
+        String packageName = intent.getPackage();
+        if (TextUtils.isEmpty(packageName)) {
+            packageName = intent.getComponent().getPackageName();
+        }
+        if (TextUtils.isEmpty(packageName))
+            throw new NameNotFoundException(packageName);
+        checkTrustedSigner(packageName);
+        return intent;
     }
 
     private boolean isIntentSane(Intent intent) {
