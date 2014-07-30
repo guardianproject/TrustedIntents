@@ -31,13 +31,20 @@ public class TrustedIntentsTests extends AndroidTestCase {
     String[] packagesSignedByAndroidIncludedApps;
     String[] packagesSignedByAndroidSystem;
 
-    @Override
-    public void setUp() {
-        context = getContext();
-        pm = context.getPackageManager();
-        ti = TrustedIntents.get(context);
-        ti.removeAllTrustedSigners();
+    private static String[] getInstalledApps(PackageManager pm, String[] packages) {
+        ArrayList<String> installedPackages = new ArrayList<String>(packages.length);
+        for (String packageName : packages) {
+            try {
+                pm.getPackageInfo(packageName, 0);
+                installedPackages.add(packageName);
+            } catch (NameNotFoundException e) {
+                Log.w(TAG, packageName + " not installed on this device");
+            }
+        }
+        return installedPackages.toArray(new String[0]);
+    }
 
+    static String[] getAndroidIncludedApps(PackageManager pm) {
         String[] androidIncludedApps = {
                 "com.android.browser", "com.android.calculator2", "com.android.calendar",
                 "com.android.dreams.basic", "com.android.providers.calendar",
@@ -46,18 +53,10 @@ public class TrustedIntentsTests extends AndroidTestCase {
                 "com.android.emulator.connectivity.test", "com.android.development_settings",
                 "com.android.email", "com.example.android.livecubes", "com.android.exchange"
         };
-        ArrayList<String> androidIncludedAppsInstalled = new ArrayList<String>(
-                androidIncludedApps.length);
-        for (String packageName : androidIncludedApps) {
-            try {
-                pm.getPackageInfo(packageName, 0);
-                androidIncludedAppsInstalled.add(packageName);
-            } catch (NameNotFoundException e) {
-                Log.w(TAG, packageName + " not installed on this device");
-            }
-        }
-        packagesSignedByAndroidIncludedApps = androidIncludedAppsInstalled.toArray(new String[0]);
+        return getInstalledApps(pm, androidIncludedApps);
+    }
 
+    static String[] getAndroidSystem(PackageManager pm) {
         String[] androidSystem = {
                 "android", "com.android.certinstaller", "com.android.backupconfirm",
                 "com.android.keyguard", "com.android.sdksetup", "com.android.sharedstoragebackup",
@@ -65,17 +64,18 @@ public class TrustedIntentsTests extends AndroidTestCase {
                 "com.android.externalstorage", "com.android.location.fused",
                 "com.android.inputdevices"
         };
-        ArrayList<String> androidSystemInstalled = new ArrayList<String>(
-                androidSystem.length);
-        for (String packageName : androidSystem) {
-            try {
-                pm.getPackageInfo(packageName, 0);
-                androidSystemInstalled.add(packageName);
-            } catch (NameNotFoundException e) {
-                Log.w(TAG, packageName + " not installed on this device");
-            }
-        }
-        packagesSignedByAndroidSystem = androidSystemInstalled.toArray(new String[0]);
+        return getInstalledApps(pm, androidSystem);
+    }
+
+    @Override
+    public void setUp() {
+        context = getContext();
+        pm = context.getPackageManager();
+        ti = TrustedIntents.get(context);
+        ti.removeAllTrustedSigners();
+
+        packagesSignedByAndroidIncludedApps = getAndroidIncludedApps(pm);
+        packagesSignedByAndroidSystem = getAndroidSystem(pm);
     }
 
     private void checkAreSignaturesEqual(String[] packages) {
