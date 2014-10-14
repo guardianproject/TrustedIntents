@@ -5,6 +5,7 @@
     <javadoc sourcepath="${source.dir}"
              destdir="${out.dir}/javadoc"
              packagenames="info.guardianproject.trustedintents.*"
+             additionalparam="-notimestamp"
              windowtitle="${ant.project.name}"
              doctitle="${ant.project.name}" />
   </target>
