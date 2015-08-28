@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>info.guardianproject.trustedintents</groupId>
+  <artifactId>trustedintents</artifactId>
+  <version>0.0</version>
+  <name>TrustedIntents</name>
+  <url>https://guardianproject.info/code/trustedintents</url>
+  <description>TrustedIntents is a library for flexible trusted interactions between Android apps.  It is modeled after Android's `signature` protection level for permissions.  The key difference is that the framework allows the trusted signature to be set, rather than requiring to match the current app's signature.</description>
+  <licenses>
+   <license>
+     <name>LGPLv2.1</name>
+     <url>https://github.com/guardianproject/TrustedIntents/blob/master/LICENSE.txt</url>
+   </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>guardianproject</id>
+      <name>Guardian Project</name>
+      <email>support@guardianproject.info</email>
+    </developer>
+  </developers>
+  <issueManagement>
+    <url>https://dev.guardianproject.info/projects/trustedintents/issues</url>
+    <system>Redmine</system>
+  </issueManagement>
+  <scm>
+    <connection>scm:https://github.com/guardianproject/TrustedIntents.git</connection>
+    <developerConnection>scm:git@github.com:guardianproject/TrustedIntents.git</developerConnection>
+    <url>scm:https://github.com/guardianproject/TrustedIntents</url>
+  </scm>
+</project>
