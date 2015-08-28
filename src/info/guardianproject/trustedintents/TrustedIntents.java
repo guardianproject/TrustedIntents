@@ -37,14 +37,33 @@ public class TrustedIntents {
         return instance;
     }
 
+    /**
+     * Check whether a resolved {@link Activity} is trusted.
+     *
+     * @param activityInfo the one to check
+     * @return whether the {@code Intent}'s receiver is trusted
+     */
     public boolean isReceiverTrusted(ResolveInfo resolveInfo) {
         return isPackageNameTrusted(resolveInfo.activityInfo.packageName);
     }
 
+    /**
+     * Check whether a resolved {@link Activity} is trusted.
+     *
+     * @param activityInfo the one to check
+     * @return whether the {@code Intent}'s receiver is trusted
+     */
     public boolean isReceiverTrusted(ActivityInfo activityInfo) {
         return isPackageNameTrusted(activityInfo.packageName);
     }
 
+    /**
+     * Check an {@link Intent} is trusted based on the {@code packageName} set
+     * by {@link Intent#setPackage(String)}
+     *
+     * @param intent the one to check
+     * @return whether the {@code Intent}'s receiver is trusted
+     */
     public boolean isReceiverTrusted(Intent intent) {
         if (!isIntentSane(intent))
             return false;
@@ -55,6 +74,12 @@ public class TrustedIntents {
         return isPackageNameTrusted(packageName);
     }
 
+    /**
+     * Check whether a {@code packageName} is trusted.
+     *
+     * @param packageName the one to check
+     * @return whether the {@code packageName} is trusted
+     */
     public boolean isPackageNameTrusted(String packageName) {
         try {
             checkTrustedSigner(packageName);
