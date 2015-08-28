@@ -40,7 +40,7 @@ public class TrustedIntents {
     /**
      * Check whether a resolved {@link Activity} is trusted.
      *
-     * @param activityInfo the one to check
+     * @param resolveInfo the one to check
      * @return whether the {@code Intent}'s receiver is trusted
      */
     public boolean isReceiverTrusted(ResolveInfo resolveInfo) {
@@ -123,7 +123,7 @@ public class TrustedIntents {
     /**
      * Add an APK signature that is always trusted for any packageName.
      *
-     * @param pin {@link Class} of the {@link ApkSignaturePin} to trust
+     * @param cls {@link Class} of the {@link ApkSignaturePin} to trust
      * @return boolean
      * @throws {@link IllegalArgumentException} the class cannot be instantiated
      */
@@ -140,7 +140,7 @@ public class TrustedIntents {
     /**
      * Remove an APK signature from the trusted set.
      *
-     * @param pin {@link Class} of the {@link ApkSignaturePin} to remove
+     * @param cls {@link Class} of the {@link ApkSignaturePin} to remove
      */
     public boolean removeTrustedSigner(Class<? extends ApkSignaturePin> cls) {
         for (ApkSignaturePin pin : pinList) {
@@ -162,7 +162,7 @@ public class TrustedIntents {
     /**
      * Check if a {@link ApkSignaturePin} is trusted.
      *
-     * @param pin {@link Class} of the {@link ApkSignaturePin} to check
+     * @param cls {@link Class} of the {@link ApkSignaturePin} to check
      */
     public boolean isTrustedSigner(Class<? extends ApkSignaturePin> cls) {
         for (ApkSignaturePin pin : pinList) {
