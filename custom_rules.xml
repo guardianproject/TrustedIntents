@@ -115,6 +115,7 @@
     <jar destfile="${release.jar}"
          manifest="MANIFEST.MF"
          includes="**"
+         excludes="info/guardianproject/trustedintents/BuildConfig.*"
          basedir="${out.classes.absolute.dir}">
     </jar>
     <if condition="${build.is.debug}">
