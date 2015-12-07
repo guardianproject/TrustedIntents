@@ -114,7 +114,7 @@
     <delete file="${release.jar}"/>
     <jar destfile="${release.jar}"
          manifest="MANIFEST.MF"
-         includes="info/**"
+         includes="**"
          basedir="${out.classes.absolute.dir}">
     </jar>
     <if condition="${build.is.debug}">
