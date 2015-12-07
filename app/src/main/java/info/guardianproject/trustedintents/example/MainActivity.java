@@ -1,11 +1,10 @@
-package info.guardianproject.trustedintents;
+package info.guardianproject.trustedintents.example;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -13,11 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import org.torproject.TorProjectRSA1024;
-
 import java.security.cert.CertificateException;
 
 import info.guardianproject.GuardianProjectRSA1024;
+import info.guardianproject.trustedintents.TrustedIntents;
 
 public class MainActivity extends AppCompatActivity {
 

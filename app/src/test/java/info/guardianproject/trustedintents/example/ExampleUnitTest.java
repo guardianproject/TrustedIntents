@@ -1,4 +1,4 @@
-package info.guardianproject.trustedintents;
+package info.guardianproject.trustedintents.example;
 
 import org.junit.Test;
 

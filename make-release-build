@@ -14,6 +14,7 @@ TIMESTAMP=`printf '@%(%Y-%m-%d %H:%M:%S)T x0.05' \
 git reset --hard
 git clean -fdx
 
+cd trustedintents
 ./setup-ant
 
 faketime -f "$TIMESTAMP" ant release-all

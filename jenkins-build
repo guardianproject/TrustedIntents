@@ -14,4 +14,5 @@ fi
 
 export PATH=$PATH:$ANDROID_HOME/tools
 
+cd trustedintents
 ./setup-ant

@@ -22,4 +22,4 @@ eval `grep '^target=' project.properties`
 CURDIR=`pwd`
 
 android update lib-project --path ${CURDIR} --target $target
-android update test-project --path ${CURDIR}/test --main ${CURDIR}
+android update test-project --path ${CURDIR}/../test --main ${CURDIR}
