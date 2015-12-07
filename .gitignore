@@ -12,9 +12,12 @@ junit-report.xml
 
 # products of "android create project" or "android update project"
 build.xml
+ant.properties
+default.properties
 local.properties
 proguard-project.txt
 proguard.cfg
+proguard-rules.pro
 
 # emacs detritus
 *~
@@ -24,3 +27,13 @@ proguard.cfg
 
 # Mac OS X detritus
 .DS_Store
+
+# Windows thumbnail db
+Thumbs.db
+
+# Android Studio
+*.iml
+.idea/
+.gradle/
+build/
+gradle.properties
