@@ -17,4 +17,4 @@ git clean -fdx
 cd trustedintents
 ./setup-ant
 
-faketime -f "$TIMESTAMP" ant release-all
+ant release-all
