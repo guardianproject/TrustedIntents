@@ -92,20 +92,41 @@ public class TrustedIntents {
         return true;
     }
 
-    public Intent getIntentFromTrustedSender(Activity activity)
-            throws NameNotFoundException, CertificateException {
-        Intent intent = activity.getIntent();
-        if (!isIntentSane(intent))
-            throw new NameNotFoundException(
-                    "Intent incomplete or was sent using startActivity() instead of startActivityWithResult()");
+    /**
+     * Check if an {@link Intent} is from a trusted sender.
+     *
+     * @param intent the {@code Intent} to check
+     * @return boolean whether {@code intent} is from a trusted sender
+     * @see #addTrustedSigner(Class)
+     */
+    public boolean isIntentFromTrustedSender(Intent intent) {
+        if (!isIntentSane(intent)) {
+            return false;
+        }
         String packageName = intent.getPackage();
         if (TextUtils.isEmpty(packageName)) {
             packageName = intent.getComponent().getPackageName();
         }
-        if (TextUtils.isEmpty(packageName))
-            throw new NameNotFoundException(packageName);
-        checkTrustedSigner(packageName);
-        return intent;
+        if (TextUtils.isEmpty(packageName)) {
+            return false;
+        }
+        return isPackageNameTrusted(packageName);
+    }
+
+    /**
+     * Returns an {@link Intent} if the sending app is signed by one of
+     * the trusted signing keys as set in {@link #addTrustedSigner(Class)}.
+     *
+     * @returns {@code null} if there is no {@code Intent} or if the
+     * sender is not trusted.
+     * @see #addTrustedSigner(Class)
+     */
+    public Intent getIntentFromTrustedSender(Activity activity) {
+        Intent intent = activity.getIntent();
+        if (isIntentFromTrustedSender(intent)) {
+            return intent;
+        }
+        return null;
     }
 
     private boolean isIntentSane(Intent intent) {
