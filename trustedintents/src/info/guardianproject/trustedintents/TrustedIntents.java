@@ -13,6 +13,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.lang.reflect.Constructor;
 import java.security.cert.CertificateException;
@@ -93,27 +94,6 @@ public class TrustedIntents {
     }
 
     /**
-     * Check if an {@link Intent} is from a trusted sender.
-     *
-     * @param intent the {@code Intent} to check
-     * @return boolean whether {@code intent} is from a trusted sender
-     * @see #addTrustedSigner(Class)
-     */
-    public boolean isIntentFromTrustedSender(Intent intent) {
-        if (!isIntentSane(intent)) {
-            return false;
-        }
-        String packageName = intent.getPackage();
-        if (TextUtils.isEmpty(packageName)) {
-            packageName = intent.getComponent().getPackageName();
-        }
-        if (TextUtils.isEmpty(packageName)) {
-            return false;
-        }
-        return isPackageNameTrusted(packageName);
-    }
-
-    /**
      * Returns an {@link Intent} if the sending app is signed by one of
      * the trusted signing keys as set in {@link #addTrustedSigner(Class)}.
      *
@@ -123,12 +103,49 @@ public class TrustedIntents {
      */
     public Intent getIntentFromTrustedSender(Activity activity) {
         Intent intent = activity.getIntent();
-        if (isIntentFromTrustedSender(intent)) {
+        String packageName = getCallingPackageName(activity);
+        if (TextUtils.isEmpty(packageName)) {
+            return null;
+        }
+        if (isPackageNameTrusted(packageName)) {
             return intent;
         }
         return null;
     }
 
+    /**
+     * Get the package name of the {@link Activity} that sent the
+     * {@link Intent} that started this {@code Activity}.
+     * <p/>
+     * <strong>WARNING</strong>: If the {@code Activity} has
+     * {@code android:launchMode="singleInstance"} or {@code "singleTask"}, then
+     * this method will not disconnect because it is not possible to get the
+     * calling {@code Activity}, as set by
+     * {@link Activity#startActivityForResult(Intent, int)}
+     *
+     * @param activity the {@code Activity} to check for the {@code Intent}
+     * @return the package of the sending app or {@code null} if it was not a
+     * {@code ACTION_CONNECT Intent} or the {@code Intent} was not sent
+     * with {@link Activity#startActivityForResult(Intent, int)}
+     */
+    public static String getCallingPackageName(Activity activity) {
+        // getCallingPackage() was unstable until android-18, use this
+        ComponentName componentName = activity.getCallingActivity();
+        if (componentName == null)
+            return null;
+        String packageName = componentName.getPackageName();
+        if (TextUtils.isEmpty(packageName)) {
+            Log.e(activity.getClass().getSimpleName(),
+                    "Received Intent without sender! The Intent must be sent using startActivityForResult() and received without launchMode singleTask or singleInstance!");
+        }
+        return packageName;
+    }
+
+    /**
+     * This is used to check whether an {@link Intent} that will be sent is
+     * complete. It should <strong>not</strong> be used with {@code Intent}s
+     * that have been received already.
+     */
     private boolean isIntentSane(Intent intent) {
         if (intent == null)
             return false;
